@@ -1,33 +1,23 @@
-#test script to check the spark connections
-
-import findspark
-findspark.init()
-
-from pyspark.sql import SparkSession
+from dependencies.spark_start import spark_start
 from pyspark.sql.types import *
 from pyspark.sql.functions import *
 
 
-spark = SparkSession.builder\
-        .master("local[3]")\
-        .appName("data_cleaning")\
-        .getOrCreate()
+def main():
+    spark = spark_start('data_clean_etl')
+    audible_data = r'D:\DataCleaning\Raw-Data-Cleaning\raw_data\audible\audible_uncleaned.csv'
+    audible_df = extract_data(spark,audible_data)
+    #check the data frame
+    audible_df.show()
 
-data = [
-    (1001, "2024-08-01", 101, "P001", 2, 25.50),
-    (1002, "2024-08-02", 102, "P002", 1, 40.00),
-    (1003, "2024-08-02", 101, "P003", 4, 15.00),
-    (1004, "2024-08-03", 103, "P001", 3, 25.50),
-    (1005, "2024-08-03", 104, "P004", 1, 30.00),
-    (1006, "2024-08-04", 102, "P002", 2, 40.00),
-    (1007, "2024-08-04", 103, "P003", 5, 15.00),
-    (1008, "2024-08-05", 104, "P005", 2, 50.00),
-]
+def extract_data(spark, path):
+    df = spark.read.format('csv')\
+        .option("header", True)\
+        .load(path)
+    return df
 
-columns = ["TransactionID", "Date", "CustomerID", "ProductID", "Quantity", "Price"]
-
-df = spark.createDataFrame(data, columns)
-
-df.show()
+# entry point for PySpark ETL application
+if __name__ == '__main__':
+    main()
 
 
