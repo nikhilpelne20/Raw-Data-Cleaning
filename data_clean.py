@@ -7,7 +7,7 @@ def main():
     spark = spark_start('data_clean_etl')
     audible_data = r'D:\DataCleaning\Raw-Data-Cleaning\raw_data\audible\audible_uncleaned.csv'
     audible_df = extract_data(spark,audible_data)
-    data_cleaning(audible_df)
+    audible_data_cleaning(audible_df)
 
 def extract_data(spark, path):
     df = spark.read.format('csv')\
@@ -15,7 +15,7 @@ def extract_data(spark, path):
         .load(path)
     return df
 
-def data_cleaning(df):
+def audible_data_cleaning(df):
     print("Inside data_cleaning function")
 
     df_clean_col_sub_str = df.withColumn("author", regexp_replace("author", r"^Writtenby:", "")) \
